@@ -1,4 +1,6 @@
 #include "lib/ConverterCommand.h"
+#include "lib/CsvReader.h"
+#include <fstream>
 #include <iostream>
 
 void PrintUsage(std::ostream& out);
@@ -13,8 +15,18 @@ int main(int argc, char* argv[])
 	}
 
 	// Открываем файл на чтение
+	std::ifstream inputFile(command->GetInputFilePath());
+	if (!inputFile.good())
+	{
+		std::cerr << "Error: failed to open input file" << std::endl;
+		return EXIT_FAILURE;
+	}
 
-	// В зависимости от команды читаем автомат мили или мура
+	CsvReader csvReader(inputFile);
+	auto csvContent = csvReader.ReadAll();
+	inputFile.close();
+
+	// В зависимости от команды читаем автомат Мили или Мура
 
 	// Переводим через конвертер в другой тип
 

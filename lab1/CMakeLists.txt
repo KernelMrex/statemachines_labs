@@ -9,4 +9,5 @@ add_executable(
         src/main.cpp
         src/lib/ConverterCommand.h
         src/lib/ConversionType.h
+        src/lib/CsvReader.h
 )
