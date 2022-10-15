@@ -1,5 +1,5 @@
-#ifndef LAB2_CONVERTINGSTRATEGY_H
-#define LAB2_CONVERTINGSTRATEGY_H
+#ifndef CONVERTINGSTRATEGY_H
+#define CONVERTINGSTRATEGY_H
 
 #include <string>
 #include <vector>
@@ -15,4 +15,4 @@ public:
 	virtual ~ConvertingStrategy() = default;
 };
 
-#endif // LAB2_CONVERTINGSTRATEGY_H
+#endif // CONVERTINGSTRATEGY_H
