@@ -32,13 +32,21 @@ int main(int argc, char* argv[])
 	vector2d converted;
 
 	// Переводим через конвертер в другой тип
-	switch (command->GetConversationType())
+	try
 	{
-	case ConversionType::MEALY_TO_MOORE:
-		converted = StateMachineConverter::Convert(MealyToMoorConvertingStrategy(), csvContent);
-		break;
-	case ConversionType::MOORE_TO_MEALY:
-		std::cerr << "Error: not implemented yet" << std::endl;
+		switch (command->GetConversationType())
+		{
+		case ConversionType::MEALY_TO_MOORE:
+			converted = StateMachineConverter::Convert(MealyToMoorConvertingStrategy(), csvContent);
+			break;
+		case ConversionType::MOORE_TO_MEALY:
+			std::cerr << "Error: not implemented yet" << std::endl;
+			return EXIT_FAILURE;
+		}
+	}
+	catch (const std::invalid_argument& ex)
+	{
+		std::cerr << "Error: could not convert. " << ex.what() << std::endl;
 		return EXIT_FAILURE;
 	}
 

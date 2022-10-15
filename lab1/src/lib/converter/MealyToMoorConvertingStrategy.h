@@ -41,7 +41,7 @@ private:
 				std::smatch matches;
 				if (!std::regex_search(cellValue, matches, mealyCellRegex))
 				{
-					throw std::invalid_argument("Invalid cellValue value " + cellValue);
+					throw std::invalid_argument("Invalid cell value \"" + cellValue + "\"");
 				}
 				auto transitionToState = matches[1].str();
 				auto transitionFunction = matches[2].str();
