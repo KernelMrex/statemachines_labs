@@ -51,6 +51,8 @@ class MealyStateMachine
 public:
 	MealyStateMachine(const std::unordered_set<std::string>& states, const std::unordered_set<std::string>& terminals)
 		: m_transitions(TransitionMap())
+		, m_states(states)
+		, m_terminals(terminals)
 	{
 		for (const auto& state : states)
 		{
@@ -77,8 +79,20 @@ public:
 		transIt->second = newTrans;
 	}
 
+	[[nodiscard]] std::unordered_set<std::string> GetStates() const
+	{
+		return m_states;
+	}
+
+	[[nodiscard]] std::unordered_set<std::string> GetTerminals() const
+	{
+		return m_terminals;
+	}
+
 private:
 	TransitionMap m_transitions;
+	std::unordered_set<std::string> m_states;
+	std::unordered_set<std::string> m_terminals;
 };
 
 #endif // MEALYSTATEMACHINE_H
