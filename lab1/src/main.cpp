@@ -1,5 +1,7 @@
 #include "lib/ConverterCommand.h"
 #include "lib/CsvReader.h"
+#include "lib/MealyToMoorConvertingStrategy.h"
+#include "lib/StateMachineConverter.h"
 #include <fstream>
 #include <iostream>
 
@@ -27,6 +29,17 @@ int main(int argc, char* argv[])
 	inputFile.close();
 
 	// В зависимости от команды читаем автомат Мили или Мура
+	vector2d converted;
+
+	switch (command->GetConversationType())
+	{
+	case ConversionType::MEALY_TO_MOORE:
+		converted = StateMachineConverter::Convert(MealyToMoorConvertingStrategy(), csvContent);
+		break;
+	case ConversionType::MOORE_TO_MEALY:
+		std::cerr << "Error: not implemented yet" << std::endl;
+		return EXIT_FAILURE;
+	}
 
 	// Переводим через конвертер в другой тип
 
