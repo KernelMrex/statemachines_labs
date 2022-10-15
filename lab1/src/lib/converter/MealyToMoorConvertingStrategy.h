@@ -1,8 +1,8 @@
 #ifndef MEALYTOMOORCONVERTINGSTRATEGY_H
 #define MEALYTOMOORCONVERTINGSTRATEGY_H
 
+#include "../statemachine/MealyStateMachineBuilder.h"
 #include "ConvertingStrategy.h"
-#include "MealyStateMachineBuilder.h"
 #include <iostream>
 #include <regex>
 

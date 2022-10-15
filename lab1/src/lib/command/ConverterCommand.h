@@ -1,7 +1,7 @@
 #ifndef CONVERTERCOMMAND_H
 #define CONVERTERCOMMAND_H
 
-#include "ConversionType.h"
+#include "../converter/ConversionType.h"
 #include <optional>
 #include <stdexcept>
 
