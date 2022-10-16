@@ -2,6 +2,7 @@
 #define MEALYTOMOORCONVERTINGSTRATEGY_H
 
 #include "../statemachine/MealyStateMachineBuilder.h"
+#include "../statemachine/MoorStateMachineBuilder.h"
 #include "ConvertingStrategy.h"
 #include <iostream>
 #include <queue>
@@ -28,11 +29,18 @@ public:
 		auto states = mealy.GetStates();
 		auto terminals = mealy.GetTerminals();
 
+		if (states.empty() || terminals.empty())
+		{
+			return vector2d{};
+		}
+
 		int moorStateCounter = 0;
 		std::unordered_map<std::pair<std::string, std::string>, std::string, PairHash> mealyToMoorStateAliasMap;
 		std::queue<std::pair<std::string, std::string>> mealyCellsToVisit;
 		mealyCellsToVisit.push(std::make_pair(*states.begin(), *terminals.begin()));
 		std::unordered_set<std::pair<std::string, std::string>, PairHash> mealyVisited;
+
+		MoorStateMachineBuilder moorBuilder;
 
 		for (std::pair<std::string, std::string> cellToVisit; !mealyCellsToVisit.empty(); mealyCellsToVisit.pop())
 		{
@@ -62,12 +70,12 @@ public:
 				// Получаем алиас на таблицу автомата Мура(в какой столбец попадаем)
 				auto mealyToMoorNewVisitedAlias = GetOrCreateMealyToMoorVisitedAlias(mealyToMoorStateAliasMap, mealyNewTransition.to, mealyNewTransition.func, moorStateCounter);
 
-				// TODO: Записываем переход из mealyToMoorVisitedAlias -(terminal)> mealyToMoorNewVisitedAlias, пока просто дамп
-				std::cout << "Moor transition: (" << mealyToMoorVisitedAlias << ", " << terminal << ") -> " << mealyToMoorNewVisitedAlias << std::endl;
+				// Записываем переход из mealyToMoorVisitedAlias -(terminal)> mealyToMoorNewVisitedAlias
+				moorBuilder.AddTransition(mealyToMoorVisitedAlias, terminal, mealyToMoorNewVisitedAlias, mealyNewTransition.func);
 			}
 		}
 
-		return vector2d{};
+		return FormatToMoorStateMachine(moorBuilder.Build());
 	}
 
 private:
@@ -124,6 +132,39 @@ private:
 		}
 
 		return builder.Build();
+	}
+
+	static vector2d FormatToMoorStateMachine(const MoorStateMachine& sm)
+	{
+		vector2d result;
+
+		auto states = sm.GetStates();
+		std::vector<std::string> headerStateAliasRow;
+		std::vector<std::string> headerStateFuncRow;
+		headerStateAliasRow.emplace_back("");
+		headerStateFuncRow.emplace_back("");
+		for (const auto& state : states)
+		{
+			headerStateAliasRow.emplace_back(state.first);
+			headerStateFuncRow.emplace_back(state.second);
+		}
+		result.emplace_back(headerStateFuncRow);
+		result.emplace_back(headerStateAliasRow);
+
+		for (const auto& terminal : sm.GetTerminals())
+		{
+			std::vector<std::string> resultRow;
+			resultRow.emplace_back(terminal);
+
+			for (const auto& state : states)
+			{
+				auto toState = sm.GetTransition(state.first, terminal);
+				resultRow.emplace_back(toState.first);
+			}
+			result.emplace_back(resultRow);
+		}
+
+		return result;
 	}
 };
 

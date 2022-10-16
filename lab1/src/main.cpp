@@ -2,6 +2,7 @@
 #include "lib/converter/MealyToMoorConvertingStrategy.h"
 #include "lib/converter/StateMachineConverter.h"
 #include "lib/csv/CsvReader.h"
+#include "lib/csv/CsvWriter.h"
 #include <fstream>
 #include <iostream>
 
@@ -24,6 +25,7 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
+	// Читаем входные значения
 	CsvReader csvReader(inputFile);
 	auto csvContent = csvReader.ReadAll();
 	inputFile.close();
@@ -50,7 +52,18 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
+	// Открываем файл на запись
+	std::ofstream outputFile(command->GetOutputFilePath());
+	if (!outputFile.good())
+	{
+		std::cerr << "Error: failed to open output file" << std::endl;
+		return EXIT_FAILURE;
+	}
+
 	// Выводим результат
+	CsvWriter csvWriter(outputFile);
+	csvWriter.WriteAll(converted);
+	outputFile.close();
 
 	return EXIT_SUCCESS;
 }

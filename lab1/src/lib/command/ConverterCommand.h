@@ -35,7 +35,7 @@ public:
 
 	[[nodiscard]] std::string GetOutputFilePath() const
 	{
-		return m_inputPath;
+		return m_outputPath;
 	}
 
 	[[nodiscard]] ConversionType GetConversationType() const

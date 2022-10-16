@@ -15,4 +15,4 @@ add_executable(
         src/lib/converter/MealyToMoorConvertingStrategy.h
         src/lib/statemachine/MealyStateMachineBuilder.h
         src/lib/statemachine/MealyStateMachine.h
-)
+        src/lib/statemachine/MoorStateMachine.h src/lib/statemachine/MoorStateMachineBuilder.h src/lib/csv/CsvWriter.h)
