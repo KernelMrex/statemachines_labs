@@ -32,7 +32,6 @@ int main(int argc, char* argv[])
 	auto csvContent = csvReader.ReadAll();
 	inputFile.close();
 
-
 	// Переводим через конвертер в другой тип
 	vector2d converted;
 	try
