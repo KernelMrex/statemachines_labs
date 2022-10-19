@@ -1,5 +1,6 @@
 #include "lib/command/ConverterCommand.h"
 #include "lib/converter/MealyToMoorConvertingStrategy.h"
+#include "lib/converter/MoorToMealyConvertingStrategy.h"
 #include "lib/converter/StateMachineConverter.h"
 #include "lib/csv/CsvReader.h"
 #include "lib/csv/CsvWriter.h"
@@ -42,8 +43,8 @@ int main(int argc, char* argv[])
 			converted = StateMachineConverter::Convert(MealyToMoorConvertingStrategy(), csvContent);
 			break;
 		case ConversionType::MOORE_TO_MEALY:
-			std::cerr << "Error: not implemented yet" << std::endl;
-			return EXIT_FAILURE;
+			converted = StateMachineConverter::Convert(MoorToMealyConvertingStrategy(), csvContent);
+			break;
 		}
 	}
 	catch (const std::invalid_argument& ex)
