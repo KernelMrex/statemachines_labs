@@ -8,6 +8,8 @@
 
 void PrintUsage(std::ostream& out);
 
+vector2d Convert(ConversionType conversionType, const vector2d& data);
+
 int main(int argc, char* argv[])
 {
 	auto command = ConverterCommand::ParseFromArgs(argc, argv);
@@ -30,21 +32,12 @@ int main(int argc, char* argv[])
 	auto csvContent = csvReader.ReadAll();
 	inputFile.close();
 
-	// В зависимости от команды читаем автомат Мили или Мура
-	vector2d converted;
 
 	// Переводим через конвертер в другой тип
+	vector2d converted;
 	try
 	{
-		switch (command->GetConversationType())
-		{
-		case ConversionType::MEALY_TO_MOORE:
-			converted = MealyToMoorConverter::Convert(csvContent);
-			break;
-		case ConversionType::MOORE_TO_MEALY:
-			converted = MoorToMealyConverter::Convert(csvContent);
-			break;
-		}
+		converted = Convert(command->GetConversationType(), csvContent);
 	}
 	catch (const std::invalid_argument& ex)
 	{
@@ -75,4 +68,15 @@ void PrintUsage(std::ostream& out)
 		<< "               moore-to-mealy - converts moor state machine to mealy state machine" << std::endl
 		<< "  input-path:  filepath with csv stored data of moor or mealy state machine input transitions data" << std::endl
 		<< "  output-path: filepath with csv stored data of moor or mealy state machine output transitions data" << std::endl;
+}
+
+vector2d Convert(ConversionType conversionType, const vector2d& data)
+{
+	switch (conversionType)
+	{
+	case ConversionType::MEALY_TO_MOORE:
+		return MealyToMoorConverter::Convert(data);
+	case ConversionType::MOORE_TO_MEALY:
+		return MoorToMealyConverter::Convert(data);
+	}
 }
