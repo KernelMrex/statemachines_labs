@@ -44,10 +44,15 @@ private:
 	{
 		MoorStateMachineBuilder builder;
 
+		std::unordered_map<std::string, std::string> mealyToMoorStateAliasMap;
+		int toStateAliasCounter = 0;
+
 		std::unordered_map<std::string, std::string> states;
 		for (int column = 1; column < std::min(from[0].size(), from[1].size()); column++)
 		{
-			states.emplace(from[1][column], from[0][column]);
+			states.emplace(
+				GetOrCreateMooreToMealyAlias(mealyToMoorStateAliasMap, toStateAliasCounter, from[1][column]),
+				from[0][column]);
 		}
 
 		for (int row = 2; row < from.size(); row++)
@@ -59,13 +64,16 @@ private:
 				auto fromState = from[1][column];
 				auto toState = from[row][column];
 
-				auto toFuncIt = states.find(toState);
+				auto fromStateAlias = GetOrCreateMooreToMealyAlias(mealyToMoorStateAliasMap, toStateAliasCounter, fromState);
+				auto toStateAlias = GetOrCreateMooreToMealyAlias(mealyToMoorStateAliasMap, toStateAliasCounter, toState);
+
+				auto toFuncIt = states.find(toStateAlias);
 				if (toFuncIt == states.end())
 				{
-					throw std::invalid_argument("could not find state func for " + toState + " state");
+					throw std::invalid_argument("could not find state func for " + toStateAlias + " state");
 				}
 
-				builder.AddTransition(fromState, terminal, toState, toFuncIt->second);
+				builder.AddTransition(fromStateAlias, terminal, toStateAlias, toFuncIt->second);
 			}
 		}
 
@@ -99,6 +107,23 @@ private:
 		}
 
 		return result;
+	}
+
+	static std::string GetOrCreateMooreToMealyAlias(
+		std::unordered_map<std::string, std::string>& mealyToMoorStateAliasMap,
+		int& toStateAliasCounter,
+		const std::string& toState)
+	{
+		std::string toStateAlias;
+		auto toStateAliasIt = mealyToMoorStateAliasMap.find(toState);
+		if (toStateAliasIt == mealyToMoorStateAliasMap.end())
+		{
+			toStateAlias = "a" + std::to_string(toStateAliasCounter++);
+			mealyToMoorStateAliasMap.emplace(toState, toStateAlias);
+			return toStateAlias;
+		}
+
+		return toStateAliasIt->second;
 	}
 };
 
