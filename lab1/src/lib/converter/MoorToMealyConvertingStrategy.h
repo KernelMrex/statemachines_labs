@@ -24,7 +24,19 @@ public:
 	{
 		auto moor = ParseMoorStateMachine(from);
 
-		return vector2d{};
+		MealyStateMachineBuilder mealyBuilder;
+		for (const auto& moorState : moor.GetStates())
+		{
+			for (const auto& terminal : moor.GetTerminals())
+			{
+				auto trans = moor.GetTransition(moorState.first, terminal);
+				mealyBuilder.AddTransition(moorState.first, terminal, trans.first, trans.second);
+			}
+		}
+
+		auto mealy = mealyBuilder.Build();
+
+		return FormatToMealyStateMachine(mealy);
 	}
 
 private:
@@ -58,6 +70,35 @@ private:
 		}
 
 		return builder.Build();
+	}
+
+	static vector2d FormatToMealyStateMachine(const MealyStateMachine& sm)
+	{
+		vector2d result;
+
+		auto states = sm.GetStates();
+		std::vector<std::string> headerStateRow;
+		headerStateRow.emplace_back("");
+		for (const auto& state : states)
+		{
+			headerStateRow.emplace_back(state);
+		}
+		result.emplace_back(headerStateRow);
+
+		for (const auto& terminal : sm.GetTerminals())
+		{
+			std::vector<std::string> resultRow;
+			resultRow.emplace_back(terminal);
+
+			for (const auto& state : states)
+			{
+				auto toState = sm.GetTransition(state, terminal);
+				resultRow.emplace_back(toState.to + "/" + toState.func);
+			}
+			result.emplace_back(resultRow);
+		}
+
+		return result;
 	}
 };
 
