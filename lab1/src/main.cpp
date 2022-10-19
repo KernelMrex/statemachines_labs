@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 
 void PrintUsage(std::ostream& out)
 {
-	out << "Usage ./lab02 <command> <input-path> <output-path>" << std::endl
+	out << "Usage ./lab1 <command> <input-path> <output-path>" << std::endl
 		<< "  command:     mealy-to-moore - converts mealy state machine to moor state machine" << std::endl
 		<< "               moore-to-mealy - converts moor state machine to mealy state machine" << std::endl
 		<< "  input-path:  filepath with csv stored data of moor or mealy state machine input transitions data" << std::endl
