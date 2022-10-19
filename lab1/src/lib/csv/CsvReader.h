@@ -16,7 +16,6 @@ public:
 	{
 	}
 
-	// TODO: add input stream error handling
 	[[nodiscard]]
 	vector2d ReadAll()
 	{
