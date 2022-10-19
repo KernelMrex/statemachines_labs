@@ -10,13 +10,11 @@ add_executable(
         src/lib/command/ConverterCommand.h
         src/lib/converter/ConversionType.h
         src/lib/csv/CsvReader.h
-        src/lib/converter/StateMachineConverter.h
-        src/lib/converter/ConvertingStrategy.h
-        src/lib/converter/MealyToMoorConvertingStrategy.h
+        src/lib/converter/MealyToMoorConverter.h
         src/lib/statemachine/MealyStateMachineBuilder.h
         src/lib/statemachine/MealyStateMachine.h
         src/lib/statemachine/MoorStateMachine.h
         src/lib/statemachine/MoorStateMachineBuilder.h
         src/lib/csv/CsvWriter.h
-        src/lib/converter/MoorToMealyConvertingStrategy.h
+        src/lib/converter/MoorToMealyConverter.h
 )

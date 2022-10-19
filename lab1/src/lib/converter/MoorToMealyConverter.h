@@ -1,26 +1,13 @@
-#ifndef MOORTOMEALYCONVERTINGSTRATEGY_H
-#define MOORTOMEALYCONVERTINGSTRATEGY_H
+#ifndef MOORTOMEALYCONVERTER_H
+#define MOORTOMEALYCONVERTER_H
 
 #include "../statemachine/MoorStateMachine.h"
 #include "../statemachine/MoorStateMachineBuilder.h"
-#include "ConvertingStrategy.h"
 
-class MoorToMealyConvertingStrategy : public ConvertingStrategy
+class MoorToMealyConverter
 {
-	struct PairHash
-	{
-		template <class T1, class T2>
-		std::size_t operator()(const std::pair<T1, T2>& p) const
-		{
-			auto h1 = std::hash<T1>{}(p.first);
-			auto h2 = std::hash<T2>{}(p.second);
-
-			return h1 ^ h2;
-		}
-	};
-
 public:
-	[[nodiscard]] vector2d Convert(const vector2d& from) const final
+	[[nodiscard]] static vector2d Convert(const vector2d& from)
 	{
 		auto moor = ParseMoorStateMachine(from);
 
@@ -127,4 +114,4 @@ private:
 	}
 };
 
-#endif // MOORTOMEALYCONVERTINGSTRATEGY_H
+#endif // MOORTOMEALYCONVERTER_H

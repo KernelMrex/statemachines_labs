@@ -1,7 +1,6 @@
 #include "lib/command/ConverterCommand.h"
-#include "lib/converter/MealyToMoorConvertingStrategy.h"
-#include "lib/converter/MoorToMealyConvertingStrategy.h"
-#include "lib/converter/StateMachineConverter.h"
+#include "lib/converter/MealyToMoorConverter.h"
+#include "lib/converter/MoorToMealyConverter.h"
 #include "lib/csv/CsvReader.h"
 #include "lib/csv/CsvWriter.h"
 #include <fstream>
@@ -40,10 +39,10 @@ int main(int argc, char* argv[])
 		switch (command->GetConversationType())
 		{
 		case ConversionType::MEALY_TO_MOORE:
-			converted = StateMachineConverter::Convert(MealyToMoorConvertingStrategy(), csvContent);
+			converted = MealyToMoorConverter::Convert(csvContent);
 			break;
 		case ConversionType::MOORE_TO_MEALY:
-			converted = StateMachineConverter::Convert(MoorToMealyConvertingStrategy(), csvContent);
+			converted = MoorToMealyConverter::Convert(csvContent);
 			break;
 		}
 	}

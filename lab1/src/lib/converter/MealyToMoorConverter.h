@@ -1,14 +1,15 @@
-#ifndef MEALYTOMOORCONVERTINGSTRATEGY_H
-#define MEALYTOMOORCONVERTINGSTRATEGY_H
+#ifndef MEALYTOMOORCONVERTER_H
+#define MEALYTOMOORCONVERTER_H
 
 #include "../statemachine/MealyStateMachineBuilder.h"
 #include "../statemachine/MoorStateMachineBuilder.h"
-#include "ConvertingStrategy.h"
 #include <iostream>
 #include <queue>
 #include <regex>
 
-class MealyToMoorConvertingStrategy : public ConvertingStrategy
+using vector2d = std::vector<std::vector<std::string>>;
+
+class MealyToMoorConverter
 {
 	struct PairHash
 	{
@@ -23,7 +24,7 @@ class MealyToMoorConvertingStrategy : public ConvertingStrategy
 	};
 
 public:
-	[[nodiscard]] vector2d Convert(const vector2d& from) const final
+	[[nodiscard]] static vector2d Convert(const vector2d& from)
 	{
 		auto mealy = ParseMealyStateMachine(from);
 		auto states = mealy.GetStates();
@@ -168,4 +169,4 @@ private:
 	}
 };
 
-#endif // MEALYTOMOORCONVERTINGSTRATEGY_H
+#endif // MEALYTOMOORCONVERTER_H
