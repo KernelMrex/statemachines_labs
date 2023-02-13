@@ -5,4 +5,6 @@
 
 Vector2D MinimizeMealyStateMachine(const Vector2D& mealyTable);
 
+Vector2D MinimizeMooreStateMachine(const Vector2D& mooreTable);
+
 #endif // LAB2_MINIMIZATION_H

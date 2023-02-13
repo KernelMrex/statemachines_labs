@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 		data = MinimizeMealyStateMachine(data);
 		break;
 	case StateMachineType::MOORE:
-		// TODO: minimize moore
+		data = MinimizeMooreStateMachine(data);
 		break;
 	}
 
