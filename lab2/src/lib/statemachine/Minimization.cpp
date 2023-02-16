@@ -5,8 +5,6 @@
 
 using TransitionDest = std::string;
 using TransitionFunc = std::string;
-using StateName = std::string;
-using GroupName = std::string;
 
 static std::tuple<TransitionDest, TransitionFunc> ParseMealyTransition(const std::string& transition)
 {
@@ -110,7 +108,7 @@ static std::tuple<Vector2D, std::size_t> MakeEqualityGroup(const Vector2D& table
 	return { std::move(resultingTable), equalityGroups.size() };
 }
 
-static Vector2D ReduceByColumnHeader(Vector2D table)
+static Vector2D ReduceByColumnHeader(Vector2D table, std::size_t headerIndex = 0)
 {
 	Vector2D result;
 	transpose<std::string>(table);
@@ -118,9 +116,9 @@ static Vector2D ReduceByColumnHeader(Vector2D table)
 	result.push_back(std::move(table[0]));
 	for (std::size_t i = 1; i < table.size(); i++)
 	{
-		if (!processed.contains(table[i][0]))
+		if (!processed.contains(table[i][headerIndex]))
 		{
-			processed.insert(table[i][0]);
+			processed.insert(table[i][headerIndex]);
 			result.push_back(std::move(table[i]));
 		}
 	}
@@ -163,20 +161,39 @@ Vector2D MinimizeMealyStateMachine(const Vector2D& mealyTable)
 	return std::move(ReduceByColumnHeader(processingTabel));
 }
 
-static Vector2D MooreInitialSplitting(const Vector2D& table)
+static std::vector<std::vector<std::size_t>> GroupColumnsByUniqueness(const std::vector<std::vector<std::string>>& columns)
 {
-	std::map<StateName, TransitionFunc> stateToSignal;
-	for (std::size_t i = 1; i < table[0].size(); i++)
+	std::vector<std::vector<std::size_t>> groups;
+
+	for (std::size_t columnIndex = 0; columnIndex < columns.size(); columnIndex++)
 	{
-		stateToSignal.insert(std::pair(table[1][i], table[0][i]));
+		bool isFound = false;
+		for (std::size_t groupsIndex = 0; groupsIndex < groups.size(); groupsIndex++)
+		{
+			if (columns[groups[groupsIndex][0]] == columns[columnIndex])
+			{
+				isFound = true;
+				groups[groupsIndex].push_back(columnIndex);
+			}
+		}
+		if (!isFound)
+		{
+			groups.push_back(std::vector{ columnIndex });
+		}
 	}
 
-	Vector2D result = table;
-	for (std::size_t i = 2; i < result.size(); i++)
+	return std::move(groups);
+}
+
+static std::map<std::string, std::string> ReverseMap(const std::map<std::string, std::vector<std::string>>& map)
+{
+	std::map<std::string, std::string> result;
+
+	for (const auto& [key, value] : map)
 	{
-		for (std::size_t j = 1; j < result[0].size(); j++)
+		for (const auto& item : value)
 		{
-			result[i][j] = stateToSignal[table[i][j]];
+			result.insert(std::pair(item, key));
 		}
 	}
 
@@ -193,103 +210,92 @@ static std::vector<std::string> GetColumn(const Vector2D& table, std::size_t col
 	return std::move(result);
 }
 
-static std::tuple<Vector2D, std::size_t> SplitIntoGroups(const Vector2D& table)
-{
-	// Получаем группы
-	std::map<std::string, std::set<std::string>> groupNameToStateName;
-	std::map<std::string, std::size_t> stateToIndex;
 
+static std::map<std::string, std::vector<std::string>> SplitByColumnInGroupUniqueness(
+	const Vector2D& protoTable,
+	const std::map<std::string, std::vector<std::string>>& groupNameToState)
+{
+	auto stateToGroupName = ReverseMap(groupNameToState);
+
+	Vector2D table = protoTable;
+	for (std::size_t i = 2; i < protoTable.size(); i++)
+	{
+		for (std::size_t j = 1; j < protoTable[0].size(); j++)
+		{
+			auto cell = protoTable[i][j];
+			table[i][j] = stateToGroupName[cell];
+		}
+	}
+
+	std::map<std::string, std::size_t> stateNameToStateIndex;
 	for (std::size_t i = 1; i < table[0].size(); i++)
 	{
-		std::string groupName = table[0][i];
-		std::string stateName = table[1][i];
-
-		stateToIndex.insert(std::pair(stateName, i));
-
-		auto it = groupNameToStateName.find(groupName);
-		if (it == groupNameToStateName.end())
-		{
-			groupNameToStateName.insert(std::pair(groupName, std::set<std::string>{ stateName }));
-			continue;
-		}
-		it->second.insert(stateName);
+		stateNameToStateIndex.insert(std::pair(table[1][i], i));
 	}
 
-	Vector2D newTable;
-	std::vector<std::string> row;
-	for (const auto& i : table)
+	int groupIndex = 0;
+	std::map<std::string, std::vector<std::string>> resultingGroupNameToState;
+	for (const auto& [_, stateNames] : groupNameToState)
 	{
-		row.push_back(i[0]);
-	}
-	newTable.push_back(row);
-
-	int newStateIndex = 0;
-	// Сравниваем между собой группируя похожие классы эквивалентности
-	for (auto [groupName, states] : groupNameToStateName)
-	{
-		// Извлекаем столбцы
-		std::map<StateName, std::vector<std::string>> stringStatesContent;
-
-		for (const std::string& state : states)
+		std::vector<std::vector<std::string>> columns;
+		std::map<std::size_t, std::string> currentIndexToStateName;
+		std::size_t currentIndex = 0;
+		for (const auto& stateName : stateNames)
 		{
-			auto columnContent = GetColumn(table, stateToIndex[state], 2, table.size());
-			stringStatesContent.insert(std::pair(state, columnContent));
+			currentIndexToStateName.insert(std::pair(currentIndex++, stateName));
+			columns.push_back(GetColumn(table, stateNameToStateIndex[stateName], 2, table.size()));
 		}
 
-		// Сравниваем между собой группируя похожие классы эквивалентности
+		auto groups = GroupColumnsByUniqueness(columns);
 
-		// Предполгаем что они всё разные. Если при проверке выясниться, что они похожие задаём новый индекс обоим столбцам
-		std::vector<std::tuple<GroupName, StateName, std::vector<std::string>>> newSubGroups;
-		for (auto [stateName, stateContent] : stringStatesContent)
+		for (const auto& group : groups)
 		{
-			std::string foundSubGroupName;
-			for (auto [subgroupName, _, subgroupContent] : newSubGroups)
+			std::string newGroupName = "G" + std::to_string(groupIndex++);
+			std::vector<std::string> newGroupContent;
+			for (auto stateColumnIndex : group)
 			{
-				if (stateContent == subgroupContent)
-				{
-					foundSubGroupName = subgroupName;
-					break;
-				}
+				newGroupContent.push_back(currentIndexToStateName[stateColumnIndex]);
 			}
-
-			if (foundSubGroupName.empty())
-			{
-				foundSubGroupName = "S" + std::to_string(newStateIndex++);
-			}
-
-			newSubGroups.emplace_back(foundSubGroupName, stateName, stateContent);
-		}
-
-		for (auto [newGroupName, stateName, stateContent] : newSubGroups)
-		{
-			std::vector<std::string> newStateRow;
-			newStateRow.push_back(newGroupName);
-			newStateRow.push_back(stateName);
-			for (const auto& cell : stateContent)
-			{
-				newStateRow.push_back(cell);
-			}
-			newTable.push_back(newStateRow);
+			resultingGroupNameToState.insert(std::pair(std::move(newGroupName), std::move(newGroupContent)));
 		}
 	}
 
-	transpose(newTable);
-
-	return { newTable, newStateIndex };
+	return resultingGroupNameToState;
 }
 
 Vector2D MinimizeMooreStateMachine(const Vector2D& mooreTable)
 {
-	Vector2D table = MooreInitialSplitting(mooreTable);
-
-	std::size_t prevGroupNumber = -1;
-	std::size_t groupNumber = 0;
-
-	while (groupNumber != prevGroupNumber)
+	std::map<std::string, std::vector<std::string>> groups;
+	for (std::size_t i = 1; i < mooreTable[0].size(); i++)
 	{
-		prevGroupNumber = groupNumber;
-		std::tie(table, groupNumber) = SplitIntoGroups(table);
+		auto stateName = mooreTable[1][i];
+		auto signalName = mooreTable[0][i];
+
+		auto it = groups.find(signalName);
+		if (it == groups.end())
+		{
+			groups.insert(std::pair(signalName, std::vector{ stateName }));
+			continue;
+		}
+		it->second.push_back(stateName);
 	}
 
-	return table;
+	std::size_t prevGroupsSize;
+	do
+	{
+		prevGroupsSize = groups.size();
+		groups = SplitByColumnInGroupUniqueness(mooreTable, groups);
+	} while(prevGroupsSize != groups.size());
+
+	Vector2D minimizedTable = mooreTable;
+	auto stateToGroupName = ReverseMap(groups);
+	for (std::size_t i = 1; i < minimizedTable.size(); i++)
+	{
+		for (std::size_t j = 1; j < minimizedTable[0].size(); j++)
+		{
+			minimizedTable[i][j] = stateToGroupName[minimizedTable[i][j]];
+		}
+	}
+
+	return std::move(ReduceByColumnHeader(minimizedTable, 1));
 }
