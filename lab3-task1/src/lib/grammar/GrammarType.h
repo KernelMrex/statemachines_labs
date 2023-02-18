@@ -1,0 +1,10 @@
+#ifndef LAB3_TASK1_GRAMMARTYPE_H
+#define LAB3_TASK1_GRAMMARTYPE_H
+
+enum class GrammarType
+{
+	LEFT,
+	RIGHT,
+};
+
+#endif // LAB3_TASK1_GRAMMARTYPE_H
