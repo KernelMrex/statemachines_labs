@@ -27,7 +27,18 @@ int main(int argc, char *argv[])
 		inputFile.close();
 	}
 
-	auto graph = BuildLeftGrammarGraph(rules);
+	CGraph<std::string, std::string> graph;
+
+	switch (args->GetGrammarType())
+	{
+	case GrammarType::LEFT:
+		graph = BuildLeftGrammarGraph(rules);
+		break;
+	case GrammarType::RIGHT:
+		graph = BuildRightGrammarGraph(rules);
+		break;
+	}
+
 	auto table = DumpGraphToCSVTable(graph);
 
 	{

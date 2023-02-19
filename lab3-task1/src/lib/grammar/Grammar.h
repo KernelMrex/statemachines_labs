@@ -10,4 +10,6 @@ std::map<std::string, std::set<std::string>> ParseRules(std::istream& in);
 
 CGraph<std::string, std::string> BuildLeftGrammarGraph(const std::map<std::string, std::set<std::string>>& rules);
 
+CGraph<std::string, std::string> BuildRightGrammarGraph(const std::map<std::string, std::set<std::string>>& rules);
+
 #endif // LAB3_TASK1_GRAMMAR_H

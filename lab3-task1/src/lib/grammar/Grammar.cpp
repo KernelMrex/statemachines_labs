@@ -24,7 +24,7 @@ std::map<std::string, std::set<std::string>> ParseRules(std::istream& in)
 	return rules;
 }
 
-static std::tuple<std::string, std::string> ParseLeftGrammarRightSide(const std::string& rightSide)
+static std::tuple<std::string, std::string> ParseGrammarRightSide(const std::string& rightSide)
 {
 	std::string to;
 	std::string signal;
@@ -50,17 +50,42 @@ CGraph<std::string, std::string> BuildLeftGrammarGraph(const std::map<std::strin
 
 	static const std::string startNodeName = "Start";
 
-	for (auto& rule : rules)
+	for (const auto& rule : rules)
 	{
-		auto& to = rule.first;
-		for (auto& rightSide : rule.second)
+		const auto& to = rule.first;
+		for (const auto& rightSide : rule.second)
 		{
 			std::string from;
 			std::string signal;
-			std::tie(from, signal) = ParseLeftGrammarRightSide(rightSide);
+			std::tie(from, signal) = ParseGrammarRightSide(rightSide);
 			if (from.empty())
 			{
 				from = startNodeName;
+			}
+			graph.AddTransition(from, to, signal);
+		}
+	}
+
+	return graph;
+}
+
+CGraph<std::string, std::string> BuildRightGrammarGraph(const std::map<std::string, std::set<std::string>>& rules)
+{
+	CGraph<std::string, std::string> graph;
+
+	static const std::string lastNodeName = "Last";
+
+	for (const auto& rule : rules)
+	{
+		const auto& from = rule.first;
+		for (const auto& rightSide : rule.second)
+		{
+			std::string to;
+			std::string signal;
+			std::tie(to, signal) = ParseGrammarRightSide(rightSide);
+			if (to.empty())
+			{
+				to = lastNodeName;
 			}
 			graph.AddTransition(from, to, signal);
 		}
