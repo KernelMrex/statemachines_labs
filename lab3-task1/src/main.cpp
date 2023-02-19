@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
 	}
 
 	auto rules = ParseRules(inputFile);
+	auto graph = BuildLeftGrammarGraph(rules);
 
 	inputFile.close();
 
