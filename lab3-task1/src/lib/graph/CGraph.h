@@ -12,12 +12,14 @@ class CGraph
 public:
 	CGraph()
 		: m_nodes(std::set<NodeT>())
+		, m_signals(std::set<SignalT>())
 		, m_transitions(std::map<NodeT, std::map<NodeT, SignalT>>()){};
 
 	bool AddTransition(const NodeT& from, const NodeT& to, const SignalT& signal)
 	{
 		m_nodes.insert(from);
 		m_nodes.insert(to);
+		m_signals.insert(signal);
 
 		auto it = m_transitions.find(from);
 		if (it == m_transitions.end())
@@ -53,8 +55,14 @@ public:
 		return m_nodes;
 	}
 
+	std::set<SignalT> const& GetSignals() const
+	{
+		return m_signals;
+	}
+
 private:
 	std::set<NodeT> m_nodes;
+	std::set<SignalT> m_signals;
 	std::map<NodeT, std::map<NodeT, SignalT>> m_transitions;
 };
 

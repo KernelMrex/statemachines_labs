@@ -22,6 +22,10 @@ add_executable(
         src/lib/grammar/Grammar.h
         src/lib/grammar/Grammar.cpp
         src/lib/graph/CGraph.h
+        src/lib/graph/Graph.cpp
+        src/lib/graph/Graph.h
+        src/lib/csv/CSVWriter.h
+        src/lib/csv/CSVReader.h
 )
 
 add_executable(
@@ -31,6 +35,10 @@ add_executable(
         src/lib/grammar/Grammar.h
         src/lib/grammar/Grammar.cpp
         src/lib/graph/CGraph.h
+        src/lib/graph/Graph.cpp
+        src/lib/graph/Graph.h
+        src/lib/csv/CSVWriter.h
+        src/lib/csv/CSVReader.h
 
         test/unit/graph/CGraphTest.cpp
         test/unit/grammar/GrammarTest.cpp

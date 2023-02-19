@@ -13,21 +13,21 @@ TEST(CGraphTest, MustStoreAndProvideNodesWithSignals)
 	{
 		auto [transitions, ok] = graph.GetTransitionsFromNode("A");
 		ASSERT_TRUE(ok);
-		std::map<std::string, std::string> expected{{"B", "SignalAB"}, {"C", "SignalAC"}};
+		std::map<std::string, std::string> expected{ { "B", "SignalAB" }, { "C", "SignalAC" } };
 		ASSERT_EQ(transitions, expected);
 	}
 
 	{
 		auto [transitions, ok] = graph.GetTransitionsFromNode("B");
 		ASSERT_TRUE(ok);
-		std::map<std::string, std::string> expected{{"C", "SignalBC"}};
+		std::map<std::string, std::string> expected{ { "C", "SignalBC" } };
 		ASSERT_EQ(transitions, expected);
 	}
 
 	{
 		auto [transitions, ok] = graph.GetTransitionsFromNode("C");
 		ASSERT_TRUE(ok);
-		std::map<std::string, std::string> expected{{"A", "SignalCA"}};
+		std::map<std::string, std::string> expected{ { "A", "SignalCA" } };
 		ASSERT_EQ(transitions, expected);
 	}
 
@@ -39,7 +39,12 @@ TEST(CGraphTest, MustStoreAndProvideNodesWithSignals)
 	}
 
 	{
-		std::set<std::string> expected{"A", "B", "C"};
+		std::set<std::string> expected{ "A", "B", "C" };
 		ASSERT_EQ(graph.GetNodes(), expected);
+	}
+
+	{
+		std::set<std::string> expected{ "SignalAB", "SignalAC", "SignalBC", "SignalCA" };
+		ASSERT_EQ(graph.GetSignals(), expected);
 	}
 }
